@@ -76,7 +76,7 @@ public class StudentService implements StudentDAO {
     public boolean registerStudentToCourse(String sEmail, int cId) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
-        boolean success = false;  // Default value is false
+        boolean success = false;
         try {
             transaction = session.beginTransaction();
             Student student = session.get(Student.class, sEmail);
@@ -84,7 +84,7 @@ public class StudentService implements StudentDAO {
             if (student != null && course != null) {
                 student.getSCourses().add(course);
                 session.merge(student);
-                success = true;  // Set to true if student registration is successful
+                success = true;
             }
             transaction.commit();
         } catch (HibernateException e) {
@@ -93,7 +93,7 @@ public class StudentService implements StudentDAO {
         } finally {
             session.close();
         }
-        return success;  // Ensure that success is returned in all cases
+        return success;
     }
 
     @Override
