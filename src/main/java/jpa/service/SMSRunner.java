@@ -1,9 +1,6 @@
 package jpa.service;
 
 import jpa.entitymodels.Course;
-import jpa.entitymodels.Student;
-import jpa.service.CourseService;
-import jpa.service.StudentService;
 
 import java.util.InputMismatchException;
 import java.util.List;
@@ -38,7 +35,13 @@ public class SMSRunner {
 
                             List<Course> registeredCourses = studentService.getStudentCourses(email);
                             System.out.println("You are registered in the following courses:");
-                            registeredCourses.forEach(course -> System.out.println(course.getCName()));
+                            if (registeredCourses.isEmpty()) {
+                                System.out.println("-----No courses currently associated with the student.-----");
+                            } else {
+                                System.out.println("ID : Course Name : Instructor Name");
+                                registeredCourses.forEach(course -> System.out.println
+                                        (course.getCId() + ": " + course.getCName() + " - " + course.getCInstructorName()));
+                            }
 
                             while (true) {
                                 System.out.println("Select an option:");
@@ -51,27 +54,44 @@ public class SMSRunner {
                                         try {
                                             List<Course> allCourses = courseService.getAllCourses();
                                             System.out.println("All Courses:");
-                                            allCourses.forEach(course -> System.out.println(course.getCName()));
+                                            System.out.println("ID : Course Name : Instructor Name");
+                                            allCourses.forEach(course -> System.out.println
+                                                    (course.getCId() + ": " + course.getCName() + " - " + course.getCInstructorName()));
                                             System.out.println("Enter the course ID you want to register for:");
                                             int courseId = scanner.nextInt();
-                                            scanner.nextLine(); // consume newline left-over
-                                            boolean success = studentService.registerStudentToCourse(email, courseId);
-                                            if (success) {
-                                                System.out.println("Successfully registered for the course.");
-                                            } else {
+                                            scanner.nextLine();
+                                            // Check if student is already registered for the course
+                                            boolean alreadyRegistered = false;
+                                            for (Course registeredCourse : registeredCourses) {
+                                                if (registeredCourse.getCId() == courseId) {
+                                                    alreadyRegistered = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (alreadyRegistered) {
                                                 System.out.println("You are already registered in that course!");
+                                            } else {
+                                                boolean success = studentService.registerStudentToCourse(email, courseId);
+                                                if (success) {
+                                                    System.out.println("Successfully registered for the course.");
+                                                } else {
+                                                    System.out.println("An error occurred while registering for the course. " +
+                                                            "Please try again.");
+                                                }
                                             }
                                             registeredCourses = studentService.getStudentCourses(email);
                                             System.out.println("You are now registered in the following courses:");
-                                            registeredCourses.forEach(course -> System.out.println(course.getCName()));
+                                            System.out.println("ID : Course Name : Instructor Name");
+                                            registeredCourses.forEach(course -> System.out.println
+                                                    (course.getCId() + ": " + course.getCName() + " - " + course.getCInstructorName()));
                                             System.out.println("Exiting program. Goodbye!");
                                             return;
                                         } catch (InputMismatchException e) {
                                             System.out.println("Invalid course ID. Please enter a number.");
-                                            scanner.nextLine(); // consume the invalid input
+                                            scanner.nextLine();
                                         } catch (Exception e) {
                                             System.out.println("An error occurred while registering for the course. Please try again.");
-                                            // Log the error message for debugging
                                             e.printStackTrace();
                                             return;
                                         }
@@ -98,7 +118,6 @@ public class SMSRunner {
                 }
             } catch (Exception e) {
                 System.out.println("An error occurred. Please try again.");
-                // Log the error message for debugging
                 e.printStackTrace();
                 return;
             }

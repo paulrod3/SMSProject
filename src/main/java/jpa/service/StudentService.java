@@ -20,15 +20,15 @@ public class StudentService implements StudentDAO {
     @Override
     public List<Student> getAllStudents() {
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
+        Transaction tx = null;
         List<Student> students = null;
         try {
-            transaction = session.beginTransaction();
+            tx = session.beginTransaction();
             Query<Student> query = session.createQuery("FROM Student", Student.class);
             students = query.getResultList();
-            transaction.commit();
+            tx.commit();
         } catch (HibernateException e) {
-            if (transaction != null) transaction.rollback();
+            if (tx != null) tx.rollback();
             e.printStackTrace();
         } finally {
             session.close();
@@ -39,14 +39,14 @@ public class StudentService implements StudentDAO {
     @Override
     public Student getStudentByEmail(String email) {
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
+        Transaction tx = null;
         Student student = null;
         try {
-            transaction = session.beginTransaction();
+            tx = session.beginTransaction();
             student = session.get(Student.class, email);
-            transaction.commit();
+            tx.commit();
         } catch (HibernateException e) {
-            if (transaction != null) transaction.rollback();
+            if (tx != null) tx.rollback();
             e.printStackTrace();
         } finally {
             session.close();
@@ -57,14 +57,14 @@ public class StudentService implements StudentDAO {
     @Override
     public boolean validateStudent(String sEmail, String password) {
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
+        Transaction tx = null;
         Student student = null;
         try {
-            transaction = session.beginTransaction();
+            tx = session.beginTransaction();
             student = session.get(Student.class, sEmail);
-            transaction.commit();
+            tx.commit();
         } catch (HibernateException e) {
-            if (transaction != null) transaction.rollback();
+            if (tx != null) tx.rollback();
             e.printStackTrace();
         } finally {
             session.close();
@@ -75,10 +75,10 @@ public class StudentService implements StudentDAO {
     @Override
     public boolean registerStudentToCourse(String sEmail, int cId) {
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
+        Transaction tx = null;
         boolean success = false;
         try {
-            transaction = session.beginTransaction();
+            tx = session.beginTransaction();
             Student student = session.get(Student.class, sEmail);
             Course course = session.get(Course.class, cId);
             if (student != null && course != null) {
@@ -86,9 +86,9 @@ public class StudentService implements StudentDAO {
                 session.merge(student);
                 success = true;
             }
-            transaction.commit();
+            tx.commit();
         } catch (HibernateException e) {
-            if (transaction != null) transaction.rollback();
+            if (tx != null) tx.rollback();
             e.printStackTrace();
         } finally {
             session.close();
@@ -99,15 +99,15 @@ public class StudentService implements StudentDAO {
     @Override
     public List<Course> getStudentCourses(String sEmail) {
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
+        Transaction tx = null;
         List<Course> courses = null;
         try {
-            transaction = session.beginTransaction();
+            tx = session.beginTransaction();
             Student student = session.get(Student.class, sEmail);
             courses = student != null ? student.getSCourses() : null;
-            transaction.commit();
+            tx.commit();
         } catch (HibernateException e) {
-            if (transaction != null) transaction.rollback();
+            if (tx != null) tx.rollback();
             e.printStackTrace();
         } finally {
             session.close();
