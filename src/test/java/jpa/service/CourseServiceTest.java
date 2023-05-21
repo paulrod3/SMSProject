@@ -14,7 +14,6 @@ public class CourseServiceTest {
     private CourseService courseService;
     @BeforeEach
     public void setup() {
-        // Initialize CourseService or mock dependencies if needed
         courseService = new CourseService();
     }
 
